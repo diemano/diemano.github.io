@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TPI com Reconhecimento de Voz</title>
+</head>
+<body>
+  <h1>Tabela Periódica Inteligente 🔬</h1>
+  <button id="start">🎙️ Fazer pergunta</button>
+  <p><strong>Pergunta:</strong> <span id="pergunta"></span></p>
+  <p><strong>Elementos:</strong> <span id="elementos"></span></p>
+  <button id="connect">🔗 Conectar à TPI (Bluetooth)</button>
+
+  <script>
+    const startBtn = document.getElementById("start");
+    const perguntaSpan = document.getElementById("pergunta");
+    const elementosSpan = document.getElementById("elementos");
+    const connectBtn = document.getElementById("connect");
+
+    let device, characteristic;
+
+    // Função para conectar via Bluetooth
+    async function conectarBluetooth() {
+      try {
+        device = await navigator.bluetooth.requestDevice({
+          filters: [{ namePrefix: "TPI" }],
+          optionalServices: ["0000ffe0-0000-1000-8000-00805f9b34fb"]
+        });
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService("0000ffe0-0000-1000-8000-00805f9b34fb");
+        characteristic = await service.getCharacteristic("0000ffe1-0000-1000-8000-00805f9b34fb");
+        alert("Conectado à TPI via Bluetooth!");
+      } catch (error) {
+        console.error("Erro ao conectar:", error);
+        alert("Erro ao conectar à TPI");
+      }
+    }
+
+    connectBtn.addEventListener("click", conectarBluetooth);
+
+    // Função para enviar dados ao Arduino
+    async function enviarParaArduino(elementos) {
+      if (characteristic) {
+        const encoder = new TextEncoder();
+        await characteristic.writeValue(encoder.encode(elementos));
+      } else {
+        alert("Bluetooth não conectado!");
+      }
+    }
+
+    // Reconhecimento de voz
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "pt-BR";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    startBtn.addEventListener("click", () => {
+      recognition.start();
+    });
+
+    recognition.onresult = async (event) => {
+      const texto = event.results[0][0].transcript;
+      perguntaSpan.textContent = texto;
+
+      // Envia a pergunta para o servidor Render
+      const resposta = await fetch("https://tpi-api-854n.onrender.com/pergunta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texto })
+      });
+
+      const dados = await resposta.json();
+      const elementos = dados.elementos;
+      elementosSpan.textContent = elementos;
+
+      // Envia para o Arduino via Bluetooth
+      await enviarParaArduino(elementos);
+    };
+
+    recognition.onerror = (event) => {
+      alert("Erro no reconhecimento de voz: " + event.error);
+    };
+  </script>
+</body>
+</html>
