@@ -64,18 +64,30 @@
       perguntaSpan.textContent = texto;
 
       // Envia a pergunta para o servidor Render
-      const resposta = await fetch("https://tpi-api-854n.onrender.com/pergunta", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto })
-      });
+      try {
+        const resposta = await fetch("https://tpi-api-854n.onrender.com/pergunta", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ texto })
+        });
 
-      const dados = await resposta.json();
-      const elementos = dados.elementos;
-      elementosSpan.textContent = elementos;
+        const dados = await resposta.json();
 
-      // Envia para o Arduino via Bluetooth
-      await enviarParaArduino(elementos);
+        if (dados.elementos) {
+          const elementos = dados.elementos;
+          elementosSpan.textContent = elementos;
+          await enviarParaArduino(elementos);
+        } else if (dados.erro) {
+          elementosSpan.textContent = "Erro: " + dados.erro;
+          console.error("Erro da API:", dados.erro);
+        } else {
+          elementosSpan.textContent = "Resposta vazia.";
+          console.warn("Resposta sem elementos.");
+        }
+      } catch (e) {
+        elementosSpan.textContent = "Erro ao processar resposta.";
+        console.error("Erro ao processar:", e);
+      }
     };
 
     recognition.onerror = (event) => {
