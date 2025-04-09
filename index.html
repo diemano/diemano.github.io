@@ -11,19 +11,33 @@
   <div class="container">
     <h1>Tabela Periódica Inteligente 🔬</h1>
 
-    <div class="output">
+    <div class="controls">
       <button id="start" class="mic-btn">
         <span class="mic-icon">🎙️</span>
         <span id="status">Clique para falar</span>
         <div class="mic-animation" id="micAnimation"></div>
       </button>
 
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="results">
       <p><strong>Pergunta:</strong> <span id="pergunta">—</span></p>
       <p><strong>Elementos:</strong> <span id="elementos">—</span></p>
     </div>
 
     <button id="connect" class="connect-btn">🔗 Conectar à TPI</button>
+
+    <div class="history">
+      <h2>Histórico</h2>
+      <ul id="historyList"></ul>
+    </div>
   </div>
+
+  <!-- Efeito sonoro embutido -->
+  <audio id="micSound" preload="auto">
+    <source src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAA..." type="audio/mp3">
+  </audio>
 
   <script>
     const startBtn = document.getElementById("start");
@@ -32,6 +46,9 @@
     const connectBtn = document.getElementById("connect");
     const micStatus = document.getElementById("status");
     const micAnim = document.getElementById("micAnimation");
+    const micSound = document.getElementById("micSound");
+    const progressBar = document.getElementById("progressBar");
+    const historyList = document.getElementById("historyList");
 
     let device, characteristic;
 
@@ -46,7 +63,6 @@
         characteristic = await service.getCharacteristic("0000ffe1-0000-1000-8000-00805f9b34fb");
         alert("Conectado à TPI via Bluetooth!");
       } catch (error) {
-        console.error("Erro ao conectar:", error);
         alert("Erro ao conectar à TPI");
       }
     }
@@ -68,14 +84,17 @@
     recognition.maxAlternatives = 1;
 
     startBtn.addEventListener("click", () => {
+      micSound.play();
       recognition.start();
       micStatus.textContent = "Escutando...";
       micAnim.classList.add("listening");
+      progressBar.style.width = "0%";
     });
 
     recognition.onresult = async (event) => {
       micStatus.textContent = "Processando...";
       micAnim.classList.remove("listening");
+      progressBar.style.width = "50%";
 
       const texto = event.results[0][0].transcript;
       perguntaSpan.textContent = texto;
@@ -88,12 +107,17 @@
         });
 
         const dados = await resposta.json();
+        progressBar.style.width = "100%";
 
         if (dados.elementos) {
           const elementos = dados.elementos;
           elementosSpan.textContent = elementos;
           await enviarParaArduino(elementos);
           micStatus.textContent = "Pronto! ✔️";
+
+          const item = document.createElement("li");
+          item.textContent = `🗣️ ${texto} → 🔬 ${elementos}`;
+          historyList.prepend(item);
         } else {
           micStatus.textContent = "Erro na resposta.";
           elementosSpan.textContent = "—";
