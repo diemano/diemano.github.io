@@ -1,141 +1,101 @@
-/* Reset e base */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #f0f2f5;
+  background-color: #f2f3f5;
   color: #222;
+  margin: 0;
+  padding: 2rem;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 2rem;
-  min-height: 100vh;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
 .container {
   background: #fff;
-  border-radius: 16px;
   padding: 2rem;
-  width: 100%;
+  border-radius: 12px;
   max-width: 700px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.05);
+  width: 100%;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
 }
 
-/* Cabeçalho com botão de tema */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 #toggleTheme {
-  font-size: 1rem;
-  padding: 0.4rem 0.7rem;
-  border-radius: 6px;
-  cursor: pointer;
   background: #ddd;
-  border: none;
-}
-
-.mic-btn, .connect-btn {
-  width: 100%;
-  padding: 1rem;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-top: 1rem;
-  transition: background 0.3s ease;
 }
 
 .mic-btn {
+  width: 100%;
+  margin-top: 1rem;
   background: linear-gradient(135deg, #2196f3, #21cbf3);
   color: white;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
+  padding: 1rem;
   position: relative;
 }
 
-.mic-icon {
-  font-size: 1.5rem;
-}
-
 .mic-animation {
-  position: absolute;
-  right: 20px;
   width: 16px;
   height: 16px;
-  border-radius: 50%;
   background: #00e5ff;
+  border-radius: 50%;
+  position: absolute;
+  right: 20px;
   opacity: 0;
-  transition: all 0.3s ease;
+  transition: 0.3s;
 }
 
 .mic-animation.listening {
-  animation: pulse 1.2s infinite;
+  animation: pulse 1s infinite;
   opacity: 1;
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
+  0% { transform: scale(1); opacity: 0.6; }
   50% { transform: scale(1.5); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
 }
 
 .progress-bar {
   height: 5px;
   width: 0%;
-  background: linear-gradient(to right, #4caf50, #81c784);
+  background: linear-gradient(to right, #4caf50, #8bc34a);
   border-radius: 10px;
   margin-top: 0.6rem;
-  transition: width 0.5s ease;
-}
-
-.results p {
-  margin-top: 1.2rem;
-  font-size: 1.1rem;
-}
-
-#pergunta, #elementos {
-  font-weight: 600;
-  color: #1565c0;
+  transition: width 0.4s ease;
 }
 
 .connect-btn {
+  margin-top: 1.5rem;
   background: linear-gradient(135deg, #4caf50, #81c784);
   color: white;
+  width: 100%;
+}
+
+.results p {
+  margin-top: 1rem;
 }
 
 .history {
   margin-top: 2rem;
 }
 
-.history h2 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
-.history ul {
-  list-style: none;
-  padding-left: 0;
-  max-height: 160px;
-  overflow-y: auto;
-  border-top: 1px solid #eee;
-}
-
-.history li {
-  padding: 0.5rem 0;
-  border-bottom: 1px dashed #ddd;
-}
-
-/* Modal */
 .modal {
   display: none;
   position: fixed;
@@ -143,55 +103,42 @@ body {
   background: rgba(0,0,0,0.5);
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 10;
 }
 
 .modal-content {
-  background: #fff;
+  background: white;
   padding: 2rem;
   border-radius: 12px;
-  width: 90%;
   max-width: 400px;
+  width: 90%;
   position: relative;
 }
 
 .close-modal {
   position: absolute;
-  top: 12px;
+  top: 10px;
   right: 16px;
   font-size: 1.4rem;
   cursor: pointer;
 }
 
-/* Tema escuro */
 .dark-mode {
   background-color: #121212;
   color: #eee;
 }
 
 .dark-mode .container {
-  background: #1e1e1e;
+  background-color: #1f1f1f;
   color: #eee;
-}
-
-.dark-mode .mic-btn {
-  background: linear-gradient(135deg, #1565c0, #64b5f6);
-}
-
-.dark-mode .connect-btn {
-  background: linear-gradient(135deg, #388e3c, #66bb6a);
-}
-
-.dark-mode #pergunta, 
-.dark-mode #elementos {
-  color: #90caf9;
 }
 
 .dark-mode .modal-content {
-  background-color: #2a2a2a;
+  background-color: #2c2c2c;
   color: #eee;
 }
 
-.dark-mode .close-modal {
-  color: #eee;
+.dark-mode button {
+  background-color: #444;
+  color: #fff;
 }
