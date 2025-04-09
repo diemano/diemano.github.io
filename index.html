@@ -41,131 +41,130 @@
     <div class="modal-content">
       <span class="close-modal" id="closeModal">&times;</span>
       <h3>Selecione seu dispositivo Bluetooth</h3>
-      <p>Dispositivos disponíveis aparecerão abaixo:</p>
+      <p>Dispositivos disponíveis aparecerão ao escanear:</p>
       <button id="escanearBluetooth">🔍 Escanear</button>
-      <ul id="listaBluetooth"></ul>
     </div>
   </div>
 
   <script>
-    const startBtn = document.getElementById("start");
-    const perguntaSpan = document.getElementById("pergunta");
-    const elementosSpan = document.getElementById("elementos");
-    const micStatus = document.getElementById("status");
-    const micAnim = document.getElementById("micAnimation");
-    const progressBar = document.getElementById("progressBar");
-    const historyList = document.getElementById("historyList");
-    const toggleThemeBtn = document.getElementById("toggleTheme");
+    document.addEventListener("DOMContentLoaded", () => {
+      const startBtn = document.getElementById("start");
+      const perguntaSpan = document.getElementById("pergunta");
+      const elementosSpan = document.getElementById("elementos");
+      const micStatus = document.getElementById("status");
+      const micAnim = document.getElementById("micAnimation");
+      const progressBar = document.getElementById("progressBar");
+      const historyList = document.getElementById("historyList");
+      const toggleThemeBtn = document.getElementById("toggleTheme");
 
-    const modalBluetooth = document.getElementById("modalBluetooth");
-    const openModalBtn = document.getElementById("connect");
-    const closeModalBtn = document.getElementById("closeModal");
-    const escanearBtn = document.getElementById("escanearBluetooth");
-    const listaBluetooth = document.getElementById("listaBluetooth");
+      const modalBluetooth = document.getElementById("modalBluetooth");
+      const openModalBtn = document.getElementById("connect");
+      const closeModalBtn = document.getElementById("closeModal");
+      const escanearBtn = document.getElementById("escanearBluetooth");
 
-    let device, characteristic;
+      let device, characteristic;
 
-    // 🌗 Alternar tema
-    function alternarTema() {
-      document.body.classList.toggle("dark-mode");
-      localStorage.setItem("tema", document.body.classList.contains("dark-mode") ? "dark" : "light");
-    }
+      // 🌗 Tema escuro manual
+      toggleThemeBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("tema", document.body.classList.contains("dark-mode") ? "dark" : "light");
+      });
 
-    toggleThemeBtn.addEventListener("click", alternarTema);
-    if (localStorage.getItem("tema") === "dark") document.body.classList.add("dark-mode");
+      if (localStorage.getItem("tema") === "dark") {
+        document.body.classList.add("dark-mode");
+      }
 
-    // 🎤 Reconhecimento de voz
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = "pt-BR";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+      // 🎤 Reconhecimento de voz
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = "pt-BR";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
 
-    startBtn.addEventListener("click", () => {
-      recognition.start();
-      micStatus.textContent = "Escutando...";
-      micAnim.classList.add("listening");
-      progressBar.style.width = "0%";
-    });
+      startBtn.addEventListener("click", () => {
+        recognition.start();
+        micStatus.textContent = "Escutando...";
+        micAnim.classList.add("listening");
+        progressBar.style.width = "0%";
+      });
 
-    recognition.onresult = async (event) => {
-      micStatus.textContent = "Processando...";
-      micAnim.classList.remove("listening");
-      progressBar.style.width = "50%";
+      recognition.onresult = async (event) => {
+        micStatus.textContent = "Processando...";
+        micAnim.classList.remove("listening");
+        progressBar.style.width = "50%";
 
-      const texto = event.results[0][0].transcript;
-      perguntaSpan.textContent = texto;
+        const texto = event.results[0][0].transcript;
+        perguntaSpan.textContent = texto;
 
-      try {
-        const resposta = await fetch("https://tpi-api-854n.onrender.com/pergunta", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ texto })
-        });
+        try {
+          const resposta = await fetch("https://tpi-api-854n.onrender.com/pergunta", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto })
+          });
 
-        const dados = await resposta.json();
-        progressBar.style.width = "100%";
+          const dados = await resposta.json();
+          progressBar.style.width = "100%";
 
-        if (dados.elementos) {
-          const elementos = dados.elementos;
-          elementosSpan.textContent = elementos;
-          await enviarParaArduino(elementos);
-          micStatus.textContent = "Pronto! ✔️";
+          if (dados.elementos) {
+            const elementos = dados.elementos;
+            elementosSpan.textContent = elementos;
+            await enviarParaArduino(elementos);
+            micStatus.textContent = "Pronto! ✔️";
 
-          const item = document.createElement("li");
-          item.textContent = `🗣️ ${texto} → 🔬 ${elementos}`;
-          historyList.prepend(item);
-        } else {
-          micStatus.textContent = "Erro na resposta.";
-          elementosSpan.textContent = "—";
+            const item = document.createElement("li");
+            item.textContent = `🗣️ ${texto} → 🔬 ${elementos}`;
+            historyList.prepend(item);
+          } else {
+            micStatus.textContent = "Erro na resposta.";
+            elementosSpan.textContent = "—";
+          }
+        } catch (e) {
+          micStatus.textContent = "Erro ao processar.";
+          console.error(e);
         }
-      } catch (e) {
-        micStatus.textContent = "Erro ao processar.";
-        console.error(e);
+      };
+
+      recognition.onerror = () => {
+        micStatus.textContent = "Erro no reconhecimento";
+        micAnim.classList.remove("listening");
+      };
+
+      async function enviarParaArduino(elementos) {
+        if (characteristic) {
+          const encoder = new TextEncoder();
+          await characteristic.writeValue(encoder.encode(elementos));
+        } else {
+          alert("Bluetooth não conectado!");
+        }
       }
-    };
 
-    recognition.onerror = () => {
-      micStatus.textContent = "Erro no reconhecimento";
-      micAnim.classList.remove("listening");
-    };
+      // 🔵 Modal Bluetooth
+      openModalBtn.addEventListener("click", () => {
+        modalBluetooth.style.display = "flex";
+      });
 
-    async function enviarParaArduino(elementos) {
-      if (characteristic) {
-        const encoder = new TextEncoder();
-        await characteristic.writeValue(encoder.encode(elementos));
-      } else {
-        alert("Bluetooth não conectado!");
-      }
-    }
-
-    // 🔵 Modal Bluetooth
-    openModalBtn.addEventListener("click", () => {
-      modalBluetooth.style.display = "flex";
-      listaBluetooth.innerHTML = "";
-    });
-
-    closeModalBtn.addEventListener("click", () => {
-      modalBluetooth.style.display = "none";
-    });
-
-    escanearBtn.addEventListener("click", async () => {
-      try {
-        const dispositivo = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: false,
-          filters: [{ namePrefix: "TPI" }],
-          optionalServices: ["0000ffe0-0000-1000-8000-00805f9b34fb"]
-        });
-
-        device = dispositivo;
-        const server = await device.gatt.connect();
-        const service = await server.getPrimaryService("0000ffe0-0000-1000-8000-00805f9b34fb");
-        characteristic = await service.getCharacteristic("0000ffe1-0000-1000-8000-00805f9b34fb");
-
+      closeModalBtn.addEventListener("click", () => {
         modalBluetooth.style.display = "none";
-        alert("Dispositivo conectado com sucesso!");
-      } catch (error) {
-        alert("Erro ao conectar: " + error);
-      }
+      });
+
+      escanearBtn.addEventListener("click", async () => {
+        try {
+          const dispositivo = await navigator.bluetooth.requestDevice({
+            filters: [{ namePrefix: "TPI" }],
+            optionalServices: ["0000ffe0-0000-1000-8000-00805f9b34fb"]
+          });
+
+          device = dispositivo;
+          const server = await device.gatt.connect();
+          const service = await server.getPrimaryService("0000ffe0-0000-1000-8000-00805f9b34fb");
+          characteristic = await service.getCharacteristic("0000ffe1-0000-1000-8000-00805f9b34fb");
+
+          modalBluetooth.style.display = "none";
+          alert("Dispositivo conectado com sucesso!");
+        } catch (error) {
+          alert("Erro ao conectar: " + error);
+        }
+      });
     });
   </script>
 </body>
