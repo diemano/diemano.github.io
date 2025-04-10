@@ -13,7 +13,7 @@ body {
   background: #fff;
   padding: 2rem;
   border-radius: 12px;
-  max-width: 700px;
+  max-width: 900px;
   width: 100%;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
 }
@@ -48,6 +48,7 @@ button {
   gap: 1rem;
   padding: 1rem;
   position: relative;
+  border-radius: 8px;
 }
 
 .mic-animation {
@@ -86,6 +87,7 @@ button {
   background: linear-gradient(135deg, #4caf50, #81c784);
   color: white;
   width: 100%;
+  border-radius: 8px;
 }
 
 .results p {
@@ -96,33 +98,75 @@ button {
   margin-top: 2rem;
 }
 
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-}
-
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  max-width: 400px;
-  width: 90%;
-  position: relative;
-}
-
-.close-modal {
-  position: absolute;
-  top: 10px;
-  right: 16px;
-  font-size: 1.4rem;
+.toggle-tabela {
+  margin-top: 1.5rem;
+  padding: 0.8rem;
+  font-size: 1rem;
+  background-color: #eee;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
 }
 
+/* Tabela periódica digital */
+.tabela-digital {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 4px;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.tabela-digital.hidden {
+  display: none;
+}
+
+.elemento {
+  background-color: #e0e0e0;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border-radius: 6px;
+  color: #000;
+  text-align: center;
+  user-select: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  font-size: 0.9rem;
+}
+
+.elemento.destacado {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+/* Espaços vazios no grid */
+.espaco {
+  background: transparent;
+  pointer-events: none;
+}
+
+/* Lantanídeos e actinídeos */
+.linha-extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.label-linha {
+  font-weight: bold;
+  min-width: 120px;
+}
+
+/* Tema escuro */
 .dark-mode {
   background-color: #121212;
   color: #eee;
@@ -143,67 +187,7 @@ button {
   color: #fff;
 }
 
-.tabela-digital {
-  display: grid;
-  grid-template-columns: repeat(18, 1fr); /* 18 colunas da Tabela Periódica */
-  gap: 4px;
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: #f5f5f5;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
-
-.tabela-digital.hidden {
-  display: none;
-}
-
-.elemento.destacado {
-  color: #000;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-  transform: scale(1.05);
-  z-index: 1;
-}
-
-.espaco {
-  background: transparent;
-  pointer-events: none;
-}
-
-/* Para Lantanídeos e Actinídeos */
-.linha-extra {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 1rem;
-  align-items: center;
-}
-
-.label-linha {
-  font-weight: bold;
-  min-width: 120px;
-}
-
-.elemento {
-  background-color: #e0e0e0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  border-radius: 6px;
-  color: #000;
-  text-align: center;
-  user-select: none;
-  transition: all 0.3s ease;
-  aspect-ratio: 1 / 1;      /* quadrados perfeitos */
-  height: auto;             /* usar aspect ratio ao invés de height fixa */
-  font-size: 0.9rem;
-  box-sizing: border-box;   /* garantir padding consistente */
-}
-
-/* Cores por grupo químico */
-
+/* 🎨 Cores por grupo químico (ativadas só quando .destacado for aplicado) */
 .dest-hidrogenio         { background-color: rgb(102, 204, 255); }
 .dest-alcalinos          { background-color: rgb(255, 102, 102); }
 .dest-alcalino-terrosos  { background-color: rgb(255, 178, 102); }
