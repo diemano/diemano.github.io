@@ -278,13 +278,87 @@
       }
 
       function destacarElementos(simbolosString) {
-        const simbolos = simbolosString.replace(/\s/g, "").split(",");
-        document.querySelectorAll(".elemento").forEach(el => {
-          const simbolo = el.getAttribute("data-simbolo");
-          el.classList.toggle("destacado", simbolos.includes(simbolo));
-        });
+  const simbolos = simbolosString.replace(/\s/g, "").split(",");
+
+  document.querySelectorAll(".elemento").forEach(el => {
+    const simbolo = el.getAttribute("data-simbolo");
+
+    // Limpa classes anteriores
+    el.classList.remove(
+      "destacado",
+      "dest-hidrogenio", "dest-alcalinos", "dest-alcalino-terrosos",
+      "dest-transicao", "dest-pos-transicao", "dest-grupo14",
+      "dest-grupo15", "dest-grupo16", "dest-halogênios",
+      "dest-gases-nobres", "dest-lantanideos", "dest-actinideos"
+    );
+
+    if (simbolos.includes(simbolo)) {
+      const grupoClasse = grupoPorElemento[simbolo];
+      if (grupoClasse) {
+        el.classList.add("destacado", grupoClasse);
       }
+    }
+  });
+}
+
     });
+    // Mapa de grupo químico por símbolo
+const grupoPorElemento = {
+  H: "dest-hidrogenio",
+
+  Li: "dest-alcalinos", Na: "dest-alcalinos", K: "dest-alcalinos",
+  Rb: "dest-alcalinos", Cs: "dest-alcalinos", Fr: "dest-alcalinos",
+
+  Be: "dest-alcalino-terrosos", Mg: "dest-alcalino-terrosos",
+  Ca: "dest-alcalino-terrosos", Sr: "dest-alcalino-terrosos",
+  Ba: "dest-alcalino-terrosos", Ra: "dest-alcalino-terrosos",
+
+  Sc: "dest-transicao", Ti: "dest-transicao", V: "dest-transicao",
+  Cr: "dest-transicao", Mn: "dest-transicao", Fe: "dest-transicao",
+  Co: "dest-transicao", Ni: "dest-transicao", Cu: "dest-transicao",
+  Zn: "dest-transicao", Y: "dest-transicao", Zr: "dest-transicao",
+  Nb: "dest-transicao", Mo: "dest-transicao", Tc: "dest-transicao",
+  Ru: "dest-transicao", Rh: "dest-transicao", Pd: "dest-transicao",
+  Ag: "dest-transicao", Cd: "dest-transicao", Hf: "dest-transicao",
+  Ta: "dest-transicao", W: "dest-transicao", Re: "dest-transicao",
+  Os: "dest-transicao", Ir: "dest-transicao", Pt: "dest-transicao",
+  Au: "dest-transicao", Hg: "dest-transicao", Rf: "dest-transicao",
+  Db: "dest-transicao", Sg: "dest-transicao", Bh: "dest-transicao",
+  Hs: "dest-transicao", Mt: "dest-transicao", Ds: "dest-transicao",
+  Rg: "dest-transicao", Cn: "dest-transicao",
+
+  Al: "dest-pos-transicao", Ga: "dest-pos-transicao",
+  In: "dest-pos-transicao", Tl: "dest-pos-transicao", Nh: "dest-pos-transicao",
+
+  C: "dest-grupo14", Si: "dest-grupo14", Ge: "dest-grupo14",
+  Sn: "dest-grupo14", Pb: "dest-grupo14", Fl: "dest-grupo14",
+
+  N: "dest-grupo15", P: "dest-grupo15", As: "dest-grupo15",
+  Sb: "dest-grupo15", Bi: "dest-grupo15", Mc: "dest-grupo15",
+
+  O: "dest-grupo16", S: "dest-grupo16", Se: "dest-grupo16",
+  Te: "dest-grupo16", Po: "dest-grupo16",
+
+  F: "dest-halogênios", Cl: "dest-halogênios", Br: "dest-halogênios",
+  I: "dest-halogênios", At: "dest-halogênios", Ts: "dest-halogênios",
+
+  He: "dest-gases-nobres", Ne: "dest-gases-nobres", Ar: "dest-gases-nobres",
+  Kr: "dest-gases-nobres", Xe: "dest-gases-nobres", Rn: "dest-gases-nobres",
+  Og: "dest-gases-nobres",
+
+  La: "dest-lantanideos", Ce: "dest-lantanideos", Pr: "dest-lantanideos",
+  Nd: "dest-lantanideos", Pm: "dest-lantanideos", Sm: "dest-lantanideos",
+  Eu: "dest-lantanideos", Gd: "dest-lantanideos", Tb: "dest-lantanideos",
+  Dy: "dest-lantanideos", Ho: "dest-lantanideos", Er: "dest-lantanideos",
+  Tm: "dest-lantanideos", Yb: "dest-lantanideos", Lu: "dest-lantanideos",
+
+  Ac: "dest-actinideos", Th: "dest-actinideos", Pa: "dest-actinideos",
+  U: "dest-actinideos", Np: "dest-actinideos", Pu: "dest-actinideos",
+  Am: "dest-actinideos", Cm: "dest-actinideos", Bk: "dest-actinideos",
+  Cf: "dest-actinideos", Es: "dest-actinideos", Fm: "dest-actinideos",
+  Md: "dest-actinideos", No: "dest-actinideos", Lr: "dest-actinideos"
+};
+
   </script>
 </body>
 </html>
