@@ -172,9 +172,10 @@ button {
 }
 
 .elemento.destacado {
-  background-color: #ffca28;
   color: #000;
-  box-shadow: 0 0 10px #ffca28;
+  box-shadow: 0 0 10px 4px rgba(255, 255, 255, 0.5), 0 0 20px 6px currentColor;
+  outline: 2px solid white;
+  z-index: 1;
 }
 
 .espaco {
@@ -196,3 +197,32 @@ button {
   min-width: 120px;
 }
 
+.elemento {
+  background-color: #e0e0e0;
+  height: 50px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border-radius: 6px;
+  color: #000;
+  text-align: center;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+
+/* Cores por grupo químico */
+
+.dest-hidrogenio         { background-color: rgb(102, 204, 255); }
+.dest-alcalinos          { background-color: rgb(255, 102, 102); }
+.dest-alcalino-terrosos  { background-color: rgb(255, 178, 102); }
+.dest-transicao          { background-color: rgb(255, 255, 153); }
+.dest-pos-transicao      { background-color: rgb(153, 255, 153); }
+.dest-grupo14            { background-color: rgb(200, 200, 255); }
+.dest-grupo15            { background-color: rgb(255, 204, 255); }
+.dest-grupo16            { background-color: rgb(255, 153, 153); }
+.dest-halogênios         { background-color: rgb(153, 255, 255); }
+.dest-gases-nobres       { background-color: rgb(204, 153, 255); }
+.dest-lantanideos        { background-color: rgb(255, 204, 153); }
+.dest-actinideos         { background-color: rgb(240, 128, 128); }
